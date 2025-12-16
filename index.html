@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Sistema de Pagos</title>
+</head>
+<body>
+  <h1>Sistema de Pagos</h1>
+  <form id="consultaForm">
+    <label for="nombre">Nombre:</label>
+    <input type="text" id="nombre" name="nombre" required>
+    <button type="submit">Consultar deuda</button>
+  </form>
+  <div id="resultado"></div>
+
+  <script>
+    document.getElementById("consultaForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const nombre = document.getElementById("nombre").value;
+      const res = await fetch(`/deuda/${nombre}`);
+      if (res.ok) {
+        const data = await res.json();
+        document.getElementById("resultado").innerHTML =
+          `<p>${data.nombre} debe ${data.pendientes} días (${data.deuda} USD)</p>`;
+      } else {
+        document.getElementById("resultado").innerHTML = "<p>Usuario no encontrado</p>";
+      }
+    });
+  </script>
+</body>
+</html>
