@@ -2,7 +2,7 @@ const express = require("express");
 const fs = require("fs");
 const path = require("path");
 
-const app = express();
+const app = express();   // 👉 Inicializa Express ANTES de usar app.get()
 app.use(express.json());
 
 // Archivos JSON
@@ -17,7 +17,7 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "index.html"));
 });
 
-// 👉 Consultar deuda de un usuario
+// 👉 Consultar deuda
 app.get("/deuda/:nombre", (req, res) => {
   const usuario = usuarios.find(
     u => u.nombre.toLowerCase() === req.params.nombre.toLowerCase()
@@ -55,7 +55,7 @@ app.get("/caja", (req, res) => {
   res.json(caja);
 });
 
-// 👉 Actualizar caja (ej: entra billete, sale cambio)
+// 👉 Actualizar caja
 app.put("/caja", (req, res) => {
   const { denominacion, cantidad } = req.body;
   if (!caja.monedas[denominacion]) caja.monedas[denominacion] = 0;
