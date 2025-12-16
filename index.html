@@ -29,6 +29,13 @@
   </form>
   <div id="resultadoPago"></div>
 
+  <hr>
+
+  <!-- Ver estado de la caja -->
+  <h2>Estado de la caja</h2>
+  <button id="verCaja">Ver caja</button>
+  <div id="resultadoCaja"></div>
+
   <script>
     // 👉 Consulta de deuda
     document.getElementById("consultaForm").addEventListener("submit", async (e) => {
@@ -62,6 +69,22 @@
           `<p>Pago registrado para ${data.usuario.nombre}. Cambio: ${data.cambio.toFixed(2)} USD</p>`;
       } else {
         document.getElementById("resultadoPago").innerHTML = "<p>Error al registrar pago</p>";
+      }
+    });
+
+    // 👉 Ver estado de la caja
+    document.getElementById("verCaja").addEventListener("click", async () => {
+      const res = await fetch("/caja");
+      if (res.ok) {
+        const data = await res.json();
+        let html = "<ul>";
+        for (const [denominacion, cantidad] of Object.entries(data.monedas)) {
+          html += `<li>${denominacion} USD: ${cantidad} monedas</li>`;
+        }
+        html += "</ul>";
+        document.getElementById("resultadoCaja").innerHTML = html;
+      } else {
+        document.getElementById("resultadoCaja").innerHTML = "<p>Error al consultar caja</p>";
       }
     });
   </script>
