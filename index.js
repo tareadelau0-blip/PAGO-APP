@@ -1,7 +1,9 @@
 const express = require("express");
 const fs = require("fs");
 const path = require("path");
-
+app.get("/", (req, res) => {
+  res.send("Sistema de pagos en línea funcionando ✅");
+});
 const app = express();
 app.use(express.json());
 
