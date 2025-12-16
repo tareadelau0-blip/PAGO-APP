@@ -1,9 +1,7 @@
 const express = require("express");
 const fs = require("fs");
 const path = require("path");
-app.get("/", (req, res) => {
-  res.send("Sistema de pagos en línea funcionando ✅");
-});
+
 const app = express();
 app.use(express.json());
 
@@ -14,9 +12,16 @@ const cajaFile = path.join(__dirname, "caja.json");
 let usuarios = JSON.parse(fs.readFileSync(usuariosFile));
 let caja = JSON.parse(fs.readFileSync(cajaFile));
 
-// Consultar deuda
+// 👉 Ruta raíz: sirve el HTML
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "index.html"));
+});
+
+// 👉 Consultar deuda de un usuario
 app.get("/deuda/:nombre", (req, res) => {
-  const usuario = usuarios.find(u => u.nombre.toLowerCase() === req.params.nombre.toLowerCase());
+  const usuario = usuarios.find(
+    u => u.nombre.toLowerCase() === req.params.nombre.toLowerCase()
+  );
   if (!usuario) return res.status(404).send("Usuario no encontrado");
 
   const pendientes = usuario.pagos.filter(p => p.estado === "Pendiente").length;
@@ -25,10 +30,12 @@ app.get("/deuda/:nombre", (req, res) => {
   res.json({ nombre: usuario.nombre, pendientes, deuda });
 });
 
-// Registrar pago
+// 👉 Registrar pago
 app.post("/pago", (req, res) => {
   const { nombre, monto } = req.body;
-  const usuario = usuarios.find(u => u.nombre.toLowerCase() === nombre.toLowerCase());
+  const usuario = usuarios.find(
+    u => u.nombre.toLowerCase() === nombre.toLowerCase()
+  );
   if (!usuario) return res.status(404).send("Usuario no encontrado");
 
   let restante = monto;
@@ -43,12 +50,12 @@ app.post("/pago", (req, res) => {
   res.json({ usuario, cambio: restante });
 });
 
-// Consultar caja
+// 👉 Consultar caja
 app.get("/caja", (req, res) => {
   res.json(caja);
 });
 
-// Actualizar caja
+// 👉 Actualizar caja (ej: entra billete, sale cambio)
 app.put("/caja", (req, res) => {
   const { denominacion, cantidad } = req.body;
   if (!caja.monedas[denominacion]) caja.monedas[denominacion] = 0;
@@ -58,5 +65,6 @@ app.put("/caja", (req, res) => {
   res.json(caja);
 });
 
+// 👉 Puerto para Render
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Servidor corriendo en puerto ${PORT}`));
